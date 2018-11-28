@@ -23,13 +23,16 @@ RESET_COLOR = \033[0m
 
 all: $(NAME)
 
+
 $(NAME): $(OBJ)
-		@clang++ $(OBJ) -o $(NAME)
+		clang++ lexer.cpp parser.cpp $(OBJ) -o $(NAME)
 		@echo "$(COLOR)***		$(NAME) compiled		***$(RESET_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		@mkdir -p $(OBJ_DIR)
-		@clang++ $(WWW) -o $@ -c $<
+		flex -o lexer.cpp lexer.l
+		bison -o parser.cpp parser.y
+		clang++ $(WWW) -o $@ -c $<
 		@echo "$(COLOR)***		obj files compiled		***$(RESET_COLOR)"
 
 clean:
