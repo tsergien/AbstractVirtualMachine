@@ -18,13 +18,12 @@
 };
 
 %token<dbl> LITERAL_DBL
+%token		exit_command
 
 %type<dbl> expr
 %type<dbl> term
 
 %start program
-
-
 %%
 program: /* empty */
 	| program expr '\n' {std::cout << $2 << std::endl;}
@@ -41,6 +40,7 @@ term: LITERAL_DBL { $$ = $1; }
 	;
 
 %%
+
 void yyerror(char const *msg)
 {
 	std::cout << "Syntax error: " << msg << std::endl;
