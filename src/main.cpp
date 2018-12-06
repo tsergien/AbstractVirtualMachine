@@ -1,9 +1,13 @@
 #include "../parser.hpp"
 #include <iostream>
+#include "../myscanner.h"
+
 
 extern "C" int yyparse (void);
 extern  int yylex();
 extern FILE * yyin;
+extern int	yylineno;
+extern char *yytext;
 
 int main(int ac, char **av)
 {

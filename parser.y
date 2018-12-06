@@ -14,14 +14,22 @@
 
 %union
 {
-	double dbl;
+	double		dbl;
+	char		i8;
+	short int	i16;
+	int			i32;
+	float		flt;
 };
 
-%token<dbl> LITERAL_DBL
-%token		exit_command
+%token <i8>		LITERAL_I8
+%token <i16>	LITERAL_I16
+%token <i32>	LITERAL_I32
+%token <flt>	LITERAL_FLT
+%token <dbl>	LITERAL_DBL
+%token			exit_command
 
-%type<dbl> expr
-%type<dbl> term
+%type <dbl>		expr
+%type <dbl>		term
 
 %start program
 %%
@@ -41,7 +49,4 @@ term: LITERAL_DBL { $$ = $1; }
 
 %%
 
-void yyerror(char const *msg)
-{
-	std::cout << "Syntax error: " << msg << std::endl;
-}
+void yyerror(char const *msg) { std::cout << "Syntax error: " << msg << std::endl; }
