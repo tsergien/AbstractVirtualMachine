@@ -26,7 +26,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 		clang++ lexer.cpp parser.cpp $(OBJ) -o $(NAME)
-		@echo "$(COLOR)***		$(NAME) compiled		***$(RESET_COLOR)"
+		@echo "$(COLOR)***		$(NAME) compiled			***$(RESET_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		@mkdir -p $(OBJ_DIR)
