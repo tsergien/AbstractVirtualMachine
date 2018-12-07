@@ -41,7 +41,7 @@ clean:
 
 fclean: clean
 		@rm -f $(NAME)
-		@echo "$(COLOR)***		$(NAME) deleteed		***$(RESET_COLOR)"
+		@echo "$(COLOR)***		$(NAME) deleted		***$(RESET_COLOR)"
 
 re: fclean all
 
