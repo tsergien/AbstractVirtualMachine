@@ -5,6 +5,7 @@
 
 	#include <iostream>
 	#include <cmath>
+	#include "includes/VirtualMachine.hpp"
 
 	extern int yylex();
 
@@ -12,6 +13,7 @@
 	extern void yyerror(char const *msg);
 %}
 
+%start input
 %union
 {
 	char		i8;
@@ -19,39 +21,64 @@
 	int			i32;
 	float		flt;
 	double		dbl;
-	int			command;
-	int			type;
 };
-%token <i8>		LITERAL_I8
-%token <i16>	LITERAL_I16
-%token <i32>	LITERAL_I32
-%token <flt>	LITERAL_FLT
-%token <dbl>	LITERAL_DBL
-%token			exit_command
 
-%type <dbl>		expr
-%type <dbl>		term
+%token <VirtualMachine>		vm
+%token <i8>		L_I8
+%token <i16>	L_I16
+%token <i32>	L_I32
+%token <flt>	L_FLT
+%token <dbl>	L_DBL
 
-%start program
+%token 			INT8
+%token 			INT16
+%token 			INT32
+%token 			FLOAT
+%token 			DOUBLE
+
+%token 			PRINT
+%token 			EXIT
+%token 			POP
+%token 			DUMP
+%token 			ADD
+%token 			SUB
+%token 			MUL
+%token 			DIV
+%token 			MOD
+%token 			PUSH
+%token 			ASSERT 			
+
+%token <int>	L_COMMAND
+%token <int>	L_TYPE
+
+%type<dbl>	line
+%type<i32>	oper_com
+%type<i32>	single_com
+%type<i32>	type
+%type<i32>	number
+
 %%
-program: 
-			: commands				{;}
-			| exit_command 			{exit(EXIT_SUCCESS);}
-			| print 				{printf("Printing \n");}
-			| line assignment 		{;}
-			| line print exp 	{printf("Printing %d\n", $3);}
-			| line exit_command 	{exit(EXIT_SUCCESS);}
-        ;
 
-assignment : identifier '=' exp  { updateSymbolVal($1,$3); }
-			;
-exp    	: term                  {$$ = $1;}
-       	| exp '+' term          {$$ = $1 + $3;}
-       	| exp '-' term          {$$ = $1 - $3;}
-       	;
-term   	: number                {$$ = $1;}
-		| identifier			{$$ = symbolVal($1);} 
-        ;
+input:	/* empty */
+		| input line
+		;
+
+line:	PRINT	{vm.print();}
+		| ws EXIT ws	{exit(EXIT_SUCCESS);}
+		| ws POP ws		{vm.pop();}
+		| ws DUMP ws	{vm.dump();}
+		| ws ADD ws		{vm.add();}
+		| ws SUB ws		{vm.sub();}
+		| ws MUL ws		{vm.mul();}
+		| ws DIV ws		{vm.div();}
+		| ws MOD ws		{vm.mod();}
+		| ws PUSH  ws  type  ws  '('  ws  number  ')'  ws	{std::cout << "push  ws  type  ws  '('  ws  number  ')'  ws\n";} 
+		| ws ASSERT  ws  type  ws  '('  ws  number  ')'  ws	{std::cout << "assert  ws  type  ws  '('  ws  number  ')'  ws\n";} 
+		;
+
+number:		L_DBL		{ $$ = $1; };
+
+ws:			{};
 
 %%
 

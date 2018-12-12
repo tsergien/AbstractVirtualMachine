@@ -9,14 +9,15 @@ extern FILE * yyin;
 extern int	yylineno;
 extern char *yytext;
 
-void	start_program()
+int		start_program()
 {
-	while (yylex());
+	//while (yylex());
 
-	// return yyparse();
+
+	return yyparse();
 }
 
-int main(int ac, char **av)
+int 	main(int ac, char **av)
 {
 	if (ac == 1)
 		start_program();
