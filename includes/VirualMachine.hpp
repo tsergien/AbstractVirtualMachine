@@ -1,7 +1,7 @@
 #ifndef VIRTUAL_MACHINE_HPP
 # define VIRTUAL_MACHINE_HPP
 # include "IOperand.hpp"
-# include <stack>
+# include <vector>
 
 // AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
 // another container that behaves like a stack is up to you. Whatever the container, it MUST

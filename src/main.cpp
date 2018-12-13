@@ -1,7 +1,5 @@
 #include "../parser.hpp"
 #include <iostream>
-#include "../myscanner.h"
-
 
 extern "C" int yyparse (void);
 extern  int yylex();
@@ -16,6 +14,9 @@ int		start_program()
 
 	return yyparse();
 }
+
+// When reading from the standard input, the end of the program is
+// indicated by the special symbol ";;" otherwise absent.
 
 int 	main(int ac, char **av)
 {

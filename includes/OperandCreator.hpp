@@ -1,21 +1,17 @@
 #ifndef OPERANDCREATOR
 # define OPERANDCREATOR
-# include "IOperand.hpp"
-
-    // typedef std::function< IOperand const * (std::string const & value) > funcptr; 
-// std::vector<IOperand const * (std::string const & value)> f;
+# include "Type.hpp"
 
 class OperandCreator;
 typedef IOperand const *(OperandCreator::*funcptr)(std::string const & value) const;
 
 class OperandCreator
 {
+public:
     ~OperandCreator();
-    OperandCreator(OperandCreator const & other) = delete;
-    OperandCreator const & operator=(OperandCreator const & other) = delete;
-    
-    OperandCreator * get_instance();
+    static OperandCreator * get_instance();
 	IOperand const * createOperand( eOperandType type, std::string const & value ) const;
+
 private:
     funcptr     f[5];
     OperandCreator();
