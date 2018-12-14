@@ -1,5 +1,5 @@
 #include "../includes/OperandCreator.hpp"
-
+#include "../includes/Type.hpp"
 
 OperandCreator::OperandCreator()
 {
@@ -11,7 +11,6 @@ OperandCreator::OperandCreator()
 }
 
 OperandCreator::~OperandCreator(){}
-
 
 IOperand const * OperandCreator::createOperand( eOperandType type, std::string const & value ) const
 {

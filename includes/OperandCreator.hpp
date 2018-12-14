@@ -1,6 +1,6 @@
 #ifndef OPERANDCREATOR
 # define OPERANDCREATOR
-# include "Type.hpp"
+# include "IOperand.hpp"
 
 class OperandCreator;
 typedef IOperand const *(OperandCreator::*funcptr)(std::string const & value) const;

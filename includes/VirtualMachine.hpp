@@ -8,8 +8,30 @@
 // only contain pointers to the abstract type IOperand.
 class VirtualMachine
 {
-    std::vector<IOperand *>   ops;
+    std::vector<IOperand const *>   ops;
 public:
+    class EmptyStack : public std::exception
+	{
+		public:
+		virtual const char*  what() const throw(){
+			return "\x1b[38;5;196mException: pop on empty stack\033[0m\n";
+		}
+	};
+    // class AssertionFailed : public std::exception
+	// {
+	// 	public:
+	// 	virtual const char*  what() const throw(){
+	// 		return "\x1b[38;5;196mException: an assert instruction is not true\033[0m\n";
+	// 	}
+	// };
+    class NotEnoughArguments : public std::exception
+	{
+		public:
+		virtual const char*  what() const throw(){
+			return "\x1b[38;5;196mException: there are not enough arguments\033[0m\n";
+		}
+	};
+
     VirtualMachine();
     ~VirtualMachine();
     VirtualMachine(VirtualMachine const & other);
@@ -23,8 +45,8 @@ public:
     void        mul();
     void        div();
     void        mod();
-    void        push(eOperandType type, IOperand *op);
-    void        assert(eOperandType type, IOperand *p);
+    void        push(IOperand const *op);
+    void        assert_(IOperand const *p);
 
 };
 
