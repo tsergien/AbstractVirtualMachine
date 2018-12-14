@@ -64,10 +64,12 @@ public:
 	};
 
 
-	Type() : _value(0), _type(Double), _s("0"), _precision(6){}
+	Type() : _value(0), _type(Double), _s("0"), _precision(15){}
 	Type(T value, eOperandType type = Double) : _value(value), _type(type), _s(std::to_string(value)), _precision(type){
-		if (_type > 2)
-			_precision = 6;
+		if (_type == 3)
+			_precision = 8;
+		if (_type == 4)
+			_precision = 15;
 	}
 	~Type(){}
 	Type(Type const & other){*this = other;}
@@ -116,9 +118,9 @@ public:
 		t = std::max(_type, rhs.getType());
 		try
 		{
-			if (_value > max_val(t) - r)
+			if (_value > max_val(t) - r && t < 3)
 				throw Type::OverflowExc();
-			else if (_value < min_val(t) - r )//a + b < min
+			else if (_value < min_val(t) - r && t < 3)//a + b < min
 				throw Type::UnderflowExc();
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_value + std::stod(rhs.toString())));
@@ -154,9 +156,9 @@ public:
 		t = std::max(_type, rhs.getType());
 		try
 		{
-			if (r > 0 && _value > max_val(t) / r)
+			if (r > 0 && _value > max_val(t) / r && t < 3)
 				throw Type::OverflowExc();
-			else if (_value < min_val(t) / r && _value > max_val(t) / r)//a*b<Min: a<Min/b | a>-Min/b
+			else if (_value < min_val(t) / r && _value > max_val(t) / r && t < 3)//a*b<Min: a<Min/b | a>-Min/b
 				throw Type::UnderflowExc();
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_value * std::stod(rhs.toString())));

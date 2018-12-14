@@ -44,24 +44,19 @@ int 	main(int ac, char **av)
 		// start_program();
 	}
 
-	// test0();
-	// test1();
+	/// test0();
+	test1();
 
-	float from1 = 0.9, to1 = std::nextafter(from1, 1.f);
-    std::cout << "The next representable float after " << std::setprecision(20) << from1
-              << " is " << to1
-              << std::hexfloat << " (" << to1 << ")\n" << std::defaultfloat;
+
 
 	return (0);
 }
-
-
 
 //   ************** tests
 void test0()
 {
 	IOperand const * x0 = OperandCreator::get_instance()->createOperand(Int8, std::to_string(0));
-	IOperand const * x1 = OperandCreator::get_instance()->createOperand(Int8, std::to_string(-126));
+	IOperand const * x1 = OperandCreator::get_instance()->createOperand(Int8, std::to_string(12));
 	IOperand const * x2 = OperandCreator::get_instance()->createOperand(Int16, std::to_string(16));
 	IOperand const * x3 = OperandCreator::get_instance()->createOperand(Int32, std::to_string(30));
 	IOperand const * x4 = OperandCreator::get_instance()->createOperand(Float, std::to_string(40));
