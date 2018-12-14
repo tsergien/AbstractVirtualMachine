@@ -1,7 +1,7 @@
 
 NAME = vm
 
-SRC_FILES = main.cpp
+SRC_FILES = OperandCreator.cpp main.cpp VirtualMachine.cpp 
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
@@ -23,15 +23,17 @@ RESET_COLOR = \033[0m
 
 all: $(NAME)
 
-
-$(NAME): $(OBJ)
+$(NAME): $(PARSING) $(OBJ)
 		clang++ lexer.cpp parser.cpp $(OBJ) -o $(NAME)
+		# clang++  $(OBJ) -o $(NAME)
 		@echo "$(COLOR)***		$(NAME) compiled			***$(RESET_COLOR)"
+
+$(PARSING):
+		bison -o parser.cpp parsing/parser.y
+		flex -o lexer.cpp parsing/lexer.l
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		@mkdir -p $(OBJ_DIR)
-		flex -o lexer.cpp lexer.l
-		bison -o parser.cpp parser.y
 		clang++ $(WWW) -o $@ -c $<
 		@echo "$(COLOR)***		obj files compiled		***$(RESET_COLOR)"
 
