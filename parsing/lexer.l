@@ -4,6 +4,8 @@
 	#include <cstdlib>
 	#include <iostream>
 	#include "parser.hpp"
+	#include "../includes/VirtualMachine.hpp"
+	#include "../includes/OperandCreator.hpp"
 	extern int	yyparse();
 	extern void	yyerror(const char *msg);
 %}
@@ -14,59 +16,45 @@ inum			[-+]?{dig}+
 dnum			[-+]?{dig}*\.{dig}+([eE][-+]?{dig}+)?
 number			{inum}|{dnum}
 ws				[ \t\r\n]
+value			[type][ws][(][l_types][)]
+
+%option debug
+%option nodefault
+%option yyclass="VirtualMachine"
+%option c++
 
 %%
-print			{return PRINT;}
-exit			{return EXIT;}
-pop				{return POP;}
-DUMP			{return DUMP;}
-add				{return ADD;}
-sub				{return SUB;}
-mul				{return MUL;}
-div				{return DIV;}
-mod				{return MOD;}
-push			{return PUSH;}
-assert			{return ASSERT;}
+print			{return token::PRINT;}
+exit			{return token::END;}
+pop				{return token::POP;}
+DUMP			{return token::DUMP;}
+add				{return token::ADD;}
+sub				{return token::SUB;}
+mul				{return token::MUL;}
+div				{return token::DIV;}
+mod				{return token::MOD;}
+push			{return token::PUSH;}
+assert			{return token::ASSERT;}
 
-int8			{return INT8;}
-int16			{return INT16;}
-int32			{return INT32;}
-flt				{return FLT;}
-dbl				{return DBL;}
+int8			{ yylval.i = 0; return TYPE}
+int16			{ yylval.i = 1; return TYPE}
+int32			{ yylval.i = 2; return TYPE}
+float			{ yylval.i = 3; return TYPE}
+double			{ yylval.i = 4; return TYPE}
 
-{number}	{
-				std::cout << "yylval: " << yylval << std::endl;
-				if (yylval == INT8)
-				{
-					yylval.i8 = (char)atoi(yytext);
-					std::cout << "Found int8: " << yylval.i8 << std::endl;
-					return L_I8;
+{inum}			{
+					std::cout << "yylval: " << yylval << std::endl;
+					// yylval->build< std::string >( yytext );
+               		return( token::INUMBER );
 				}
-				else if (yylval == INT16)
-				{
-					yylval.i16 = (short int)atoi(yytext);
-					std::cout << "Found int16: " << yylval.i16 << std::endl;
-					return L_I16;
+
+{dnum}			{
+					std::cout << "yylval: " << yylval << std::endl;
+					// yylval->build< std::string >( yytext );
+               		return( token::DNUMBER );
 				}
-				else if (yylval == INT32)
-				{
-					yylval.i32 = (int)atoi(yytext);
-					std::cout << "Found int32: " << yylval.i32 << std::endl;
-					return L_I32;
-				}
-				else if (yylval == FLT)
-				{
-					yylval.flt = (float)atof(yytext);
-					std::cout << "Found flt: " << yylval.flt << std::endl;
-					return L_FLT;
-				}
-				else
-				{
-					yylval.flt = atof(yytext);
-					std::cout << "Found dbl: " << yylval.dbl << std::endl;
-					return L_DBL;
-				}
-			}
+
 ws				;
+;;				{ return token::END; }
+;				{ return token::COMMENT; }
 .				{ECHO; yyerror("unexpected character");}
-

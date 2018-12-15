@@ -1,21 +1,21 @@
-// #include "../parser.hpp"
 #include <iostream>
 #include "../includes/Type.hpp"
 #include "../includes/VirtualMachine.hpp"
+#include "../parsing/parser.hpp"
 
-// extern "C" int yyparse (void);
-// extern  int yylex();
-// extern FILE * yyin;
-// extern int	yylineno;
-// extern char *yytext;
+extern "C" int yyparse (void);
+extern  int yylex();
+extern FILE * yyin;
+extern char *yytext;
 
-// int		start_program()
-// {
-// 	//while (yylex());
+int		start_program()
+{
+	while (yylex())
+		std::cout << yytext << std::endl;
 
-
-// 	return yyparse();
-// }
+	// return 0;
+	return yyparse();
+}
 
 // When reading from the standard input, the end of the program is
 // indicated by the special symbol ";;" otherwise absent.
@@ -23,15 +23,10 @@
 void test0();
 void test1();
 
-
-#include <iomanip>
-#include <cfloat>
-#include <cmath>
-#include <cfenv>
 int 	main(int ac, char **av)
 {
-	// if (ac == 1)
-	// 	start_program();
+	if (ac == 1)
+		start_program();
 	for (int i = 1; i < ac; i++)
 	{
 		FILE *myfile = fopen(av[i], "r");
@@ -40,17 +35,34 @@ int 	main(int ac, char **av)
 			std::cerr << "Can't open " << av[i] << " file! " << std::endl;
 			return -1;
 		}
-		// yyin = myfile;
-		// start_program();
+		yyin = myfile;
+		start_program();
 	}
 
+
+
 	/// test0();
-	test1();
-
-
-
+	// test1();
 	return (0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //   ************** tests
 void test0()
