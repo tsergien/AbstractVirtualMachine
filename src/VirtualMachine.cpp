@@ -2,13 +2,29 @@
 #include "../includes/OperandCreator.hpp"
 #include <assert.h>
 
-VirtualMachine::VirtualMachine(){}
+VirtualMachine::VirtualMachine()
+{
+    commands[0] = &VirtualMachine::pop;
+    commands[1] = &VirtualMachine::dump;
+    commands[2] = &VirtualMachine::add;
+    commands[3] = &VirtualMachine::sub;
+    commands[4] = &VirtualMachine::mul;
+    commands[5] = &VirtualMachine::div;
+    commands[6] = &VirtualMachine::mod;
+    commands[7] = &VirtualMachine::print;
+}
 VirtualMachine::~VirtualMachine(){}
 VirtualMachine::VirtualMachine(VirtualMachine const & other){*this = other;}
 VirtualMachine & VirtualMachine::operator=(VirtualMachine const & other)
 {
     this->ops = other.ops;
     return *this;
+}
+
+void        VirtualMachine::exec_command(int c)
+{
+    assert (c >= 0 && c < 8);
+    (this->*(commands[c]))();
 }
 
 void        VirtualMachine::pop()
@@ -31,17 +47,6 @@ void        VirtualMachine::dump()
     std::cout << std::endl;
 }
 
-void        VirtualMachine::assert_(IOperand const *p)
-{
-    assert(p->toString() == ops.back()->toString());
-    // try
-    // {
-    //     if (p->toString() == ops.back()->toString())
-    //         throw VirtualMachine::AssertionFailed();
-    // }
-    // catch (std::exception & e) {std::cerr << e.what();}
-}
-
 void        VirtualMachine::add()
 {
     try
@@ -59,6 +64,7 @@ void        VirtualMachine::add()
     }
     catch (std::exception & e) {std::cerr << e.what();}
 }
+
 void        VirtualMachine::sub()
 {
     try
@@ -76,6 +82,7 @@ void        VirtualMachine::sub()
     }
     catch (std::exception & e) {std::cerr << e.what();}
 }
+
 void        VirtualMachine::mul()
 {
     try
@@ -137,3 +144,4 @@ void        VirtualMachine::print()
 }
 
 void        VirtualMachine::push(IOperand const *op) {ops.push_back(op);}
+void        VirtualMachine::assert_(IOperand const *p){assert(p->toString() == ops.back()->toString());}

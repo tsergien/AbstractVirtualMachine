@@ -1,50 +1,98 @@
 #include <iostream>
 #include "../includes/Type.hpp"
 #include "../includes/VirtualMachine.hpp"
-#include "../parsing/parser.hpp"
+#include <regex>
+#include <string>
+#include <fstream>
 
-extern "C" int yyparse (void);
-extern  int yylex();
-extern FILE * yyin;
-extern char *yytext;
 
-int		start_program()
+void	exec_input(std::istream &is)
 {
-	while (yylex())
-		std::cout << yytext << std::endl;
+    std::string s;
+    std::cmatch result;
+    std::regex  command("(add|sub|mul|div|mod|exit|print|pop)"
+                        "|"
+						"(push|assert)(\\s)(int8|int16|int32|float|double)"
+                        "(\\()"
+                        "(([-+]?[1-9][0-9]*\\.?[0-9]+[eE][+-]?[0-9]+)"
+                        "|"
+                        "([-+]?[1-9][0-9]*\\.?[0-9]+))"
+                        "(\\))"
+                        );
 
-	// return 0;
-	return yyparse();
+    try
+    {
+         while (std::getline(is, s, '\n'))
+        {
+            if (std::regex_match(s.c_str(), result, command))
+                for(unsigned i = 0; i < result.size(); i++)
+                    std::cout << "res[" << i <<"]: " << result[i] << std::endl;
+        }
+    }
+    catch (std::regex_error & e) {std::cout << e.what() << std::endl;}
 }
+
+int main(int ac, char **av)
+{
+	if (ac == 1)
+		exec_input(std::cin);
+	for (int i = 1;  i < ac; i++)
+	{
+		std::filebuf fb;
+		if (fb.open (av[i] ,std::ios::in))
+ 		{
+    		std::istream is(&fb);
+    		exec_input(is);
+    		fb.close();
+  		}
+		else { std::cerr << "Cant open " << av[i] << std::endl; }
+	}
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+// #include "../parsing/parser.hpp"
+
+// extern "C" int yyparse (void);
+// extern  int yylex();
+// extern FILE * yyin;
+// extern char *yytext;
+// int		start_program()
+// {
+// 	while (yylex())
+// 		std::cout << yytext << std::endl;
+
+// 	// return 0;
+// 	return yyparse();
+// }
+
 
 // When reading from the standard input, the end of the program is
 // indicated by the special symbol ";;" otherwise absent.
-
-void test0();
-void test1();
-
-int 	main(int ac, char **av)
-{
-	if (ac == 1)
-		start_program();
-	for (int i = 1; i < ac; i++)
-	{
-		FILE *myfile = fopen(av[i], "r");
-		if (!myfile)
-		{
-			std::cerr << "Can't open " << av[i] << " file! " << std::endl;
-			return -1;
-		}
-		yyin = myfile;
-		start_program();
-	}
-
-
-
-	/// test0();
-	// test1();
-	return (0);
-}
+// int 	main(int ac, char **av)
+// {
+// 	if (ac == 1)
+// 		start_program();
+// 	for (int i = 1; i < ac; i++)
+// 	{
+// 		FILE *myfile = fopen(av[i], "r");
+// 		if (!myfile)
+// 		{
+// 			std::cerr << "Can't open " << av[i] << " file! " << std::endl;
+// 			return -1;
+// 		}
+// 		yyin = myfile;
+// 		start_program();
+// 	}
+// 	return (0);
+// }
 
 
 
@@ -64,7 +112,7 @@ int 	main(int ac, char **av)
 
 
 
-//   ************** tests
+//   ************** tests *******************
 void test0()
 {
 	IOperand const * x0 = OperandCreator::get_instance()->createOperand(Int8, std::to_string(0));
