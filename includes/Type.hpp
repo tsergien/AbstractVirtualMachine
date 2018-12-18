@@ -144,7 +144,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_value - std::stod(rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what();}
+		catch (std::exception & e){std::cerr << e.what(); exit(0);}
 		exit(0);
 	}
 
@@ -163,7 +163,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_value * std::stod(rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what();}
+		catch (std::exception & e){std::cerr << e.what();exit(0);exit(0);}
 		exit(0);
 	}
 
@@ -178,7 +178,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_value / std::stod(rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what();}
+		catch (std::exception & e){std::cerr << e.what();exit(0);}
 		exit(0);
 	}
 
@@ -195,7 +195,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string((int)_value % std::stoi(rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what();}
+		catch (std::exception & e){std::cerr << e.what();exit(0);}
 		exit(0);
 	}
 	

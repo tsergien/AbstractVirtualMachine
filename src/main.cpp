@@ -1,52 +1,43 @@
 #include <iostream>
 #include "../includes/Type.hpp"
 #include "../includes/VirtualMachine.hpp"
+#include "../includes/Lexer.hpp"
+#include "../includes/Parser.hpp"
 #include <regex>
 #include <string>
+#include <errno.h>
 #include <fstream>
-
-
-void	exec_input(std::istream &is)
-{
-    std::string s;
-    std::cmatch result;
-    std::regex  command("(add|sub|mul|div|mod|exit|print|pop)"
-                        "|"
-						"(push|assert)(\\s)(int8|int16|int32|float|double)"
-                        "(\\()"
-                        "(([-+]?[1-9][0-9]*\\.?[0-9]+[eE][+-]?[0-9]+)"
-                        "|"
-                        "([-+]?[1-9][0-9]*\\.?[0-9]+))"
-                        "(\\))"
-                        );
-
-    try
-    {
-         while (std::getline(is, s, '\n'))
-        {
-            if (std::regex_match(s.c_str(), result, command))
-                for(unsigned i = 0; i < result.size(); i++)
-                    std::cout << "res[" << i <<"]: " << result[i] << std::endl;
-        }
-    }
-    catch (std::regex_error & e) {std::cout << e.what() << std::endl;}
-}
 
 int main(int ac, char **av)
 {
+	Lexer lex;
+	VirtualMachine vm;
+	std::string line;
 	if (ac == 1)
-		exec_input(std::cin);
+		while (std::getline(std::cin, line, '\n'))
+		{
+			if (lex.set_token(line))
+			Parser::parse_token(lex.get_clone(), vm);
+		}
 	for (int i = 1;  i < ac; i++)
 	{
 		std::filebuf fb;
 		if (fb.open (av[i] ,std::ios::in))
  		{
     		std::istream is(&fb);
-    		exec_input(is);
+			std::vector<s_tok> tokens;
+			while (std::getline(is, line, '\n'))
+			{
+				if (lex.set_token(line))
+				tokens.push_back(lex.get_clone());
+			}
+			for (unsigned i = 0; i < tokens.size(); i++)
+				Parser::parse_token(tokens[i], vm);
     		fb.close();
   		}
-		else { std::cerr << "Cant open " << av[i] << std::endl; }
+		if (errno) { std::cerr << av[i]<<": " << strerror(errno) << std::endl; }
 	}
+	system("leaks -q vm");
     return 0;
 }
 
@@ -93,22 +84,6 @@ int main(int ac, char **av)
 // 	}
 // 	return (0);
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

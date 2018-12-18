@@ -12,6 +12,7 @@ VirtualMachine::VirtualMachine()
     commands[5] = &VirtualMachine::div;
     commands[6] = &VirtualMachine::mod;
     commands[7] = &VirtualMachine::print;
+    commands[8] = &VirtualMachine::exit_;
 }
 VirtualMachine::~VirtualMachine(){}
 VirtualMachine::VirtualMachine(VirtualMachine const & other){*this = other;}
@@ -23,7 +24,7 @@ VirtualMachine & VirtualMachine::operator=(VirtualMachine const & other)
 
 void        VirtualMachine::exec_command(int c)
 {
-    assert (c >= 0 && c < 8);
+    assert (c >= 0 && c < 9);
     (this->*(commands[c]))();
 }
 
@@ -62,7 +63,7 @@ void        VirtualMachine::add()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();}
+    catch (std::exception & e) {std::cerr << e.what();exit(0);}
 }
 
 void        VirtualMachine::sub()
@@ -80,7 +81,7 @@ void        VirtualMachine::sub()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();}
+    catch (std::exception & e) {std::cerr << e.what();exit(0);exit(0);exit(0);}
 }
 
 void        VirtualMachine::mul()
@@ -116,7 +117,7 @@ void        VirtualMachine::div()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();}
+    catch (std::exception & e) {std::cerr << e.what();exit(0);}
 }
 
 void        VirtualMachine::mod()
@@ -134,7 +135,7 @@ void        VirtualMachine::mod()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();}
+    catch (std::exception & e) {std::cerr << e.what();exit(0);exit(0);}
 }
 
 void        VirtualMachine::print()
@@ -143,5 +144,15 @@ void        VirtualMachine::print()
     std::cout << (char)std::stoi(ops.back()->toString()) << std::endl;
 }
 
+void        VirtualMachine::exit_(){exit(0);}
+
 void        VirtualMachine::push(IOperand const *op) {ops.push_back(op);}
-void        VirtualMachine::assert_(IOperand const *p){assert(p->toString() == ops.back()->toString());}
+void        VirtualMachine::assert_(IOperand const *p){
+    try
+    {
+        if (p->toString() != ops.back()->toString())
+            throw VirtualMachine::AssertionFailed();
+    }
+    catch (std::exception & e){std::cout << e.what();exit(0);}
+    // assert(p->toString() == ops.back()->toString());
+}

@@ -10,10 +10,8 @@
 # define DIV 5
 # define MOD 6
 # define PRINT 7
+# define EXIT 8
 
-// AbstractVM is a stack based virtual machine. Whereas the stack is an actual stack or
-// another container that behaves like a stack is up to you. Whatever the container, it MUST
-// only contain pointers to the abstract type IOperand.
 class VirtualMachine
 {
 public:
@@ -22,6 +20,13 @@ public:
 		public:
 		virtual const char*  what() const throw(){
 			return "\x1b[38;5;196mException: pop on empty stack\033[0m\n";
+		}
+	};
+    class AssertionFailed : public std::exception
+	{
+		public:
+		virtual const char*  what() const throw(){
+			return "\x1b[38;5;196mException: an assertion instruction is not true\033[0m\n";
 		}
 	};
     class NotEnoughArguments : public std::exception
@@ -40,7 +45,6 @@ public:
 	typedef void(VirtualMachine::*fptr)(void); 
 	void		exec_command(int c);
 
-    void        print();
     void        pop();
     void        dump();
     void        add();
@@ -48,12 +52,14 @@ public:
     void        mul();
     void        div();
     void        mod();
+    void        print();
+    void        exit_();
 
     void        push(IOperand const *op);
     void        assert_(IOperand const *p);
 private:
 	std::vector<IOperand const *>   ops;
-	fptr	commands[8];
+	fptr	commands[9];
 };
 
 #endif

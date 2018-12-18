@@ -7,20 +7,36 @@ struct	s_tok
 {
 	std::string command;
 	std::string type;
-	double 		value;
+	std::string value;
 };
 
 class Lexer
 {
+public:
+	class LexicalError : public std::exception
+	{
+		public:
+		virtual const char*  what() const throw(){
+			return "\x1b[38;5;196mLexical error: \033[0m\n";
+		}
+	};
+	class InstrUnknown : public std::exception
+	{
+		public:
+		virtual const char*  what() const throw(){
+			return "\x1b[38;5;196mException: unknown instruction \033[0m\n";
+		}
+	};
 	Lexer();
 	~Lexer();
 	Lexer(Lexer const & other);
 	Lexer const & operator=(Lexer const & other);
 
-	std::vector<s_tok *> get_tokens(std::istream & is);
-
+	bool set_token(std::string s);
+	s_tok * get_token() const;
+	s_tok get_clone() const;
 private:
-	std::vector<s_tok *> tokens;
+	s_tok	*token;
 };
 
 #endif
