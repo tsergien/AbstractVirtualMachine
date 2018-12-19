@@ -45,7 +45,6 @@ void        VirtualMachine::dump()
     std::vector<IOperand const *>::iterator it = ops.end();
     for (it = --ops.end(); it >= ops.begin(); --it)
         std::cout << (*it)->toString() << std::endl;
-    std::cout << std::endl;
 }
 
 void        VirtualMachine::add()

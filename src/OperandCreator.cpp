@@ -14,6 +14,7 @@ OperandCreator::~OperandCreator(){}
 
 IOperand const * OperandCreator::createOperand( eOperandType type, std::string const & value ) const
 {
+    if (value.empty()){std::cerr << "Error: empty value!\n"; exit(0);}
 	return (this->*(f[type]))(value);
 }
 
@@ -25,26 +26,45 @@ OperandCreator * OperandCreator::get_instance()
 
 IOperand const * OperandCreator::createInt8( std::string const & value ) const
 {
-    char val = std::stoi(value);
-    return new Type<char>(val, Int8);
+    try
+    {
+        if (value != std::to_string((char)std::stoi(value)))
+            throw Type::OverflowExc();
+        else
+            return new Type(value, Int8);
+    }
+    catch (std::exception & e){std::cout << e.what();exit(0);}
+    return new Type(value, Int8);
 }
 IOperand const * OperandCreator::createInt16( std::string const & value ) const
 {
-    short int val = std::stoi(value);
-    return new Type<short int>(val, Int16);
+    try
+    {
+        if (value != std::to_string((short int)std::stoi(value)))
+            throw Type::OverflowExc();
+        else
+            return new Type(value, Int8);
+    }
+    catch (std::exception & e){std::cout << e.what();exit(0);}
+    return new Type(value, Int16);
 }
 IOperand const * OperandCreator::createInt32( std::string const & value ) const
 {
-    int val = std::stoi(value);
-    return new Type<int>(val, Int32);
+    try
+    {
+        if (value != std::to_string((int)std::stoi(value)))
+            throw Type::OverflowExc();
+        else
+            return new Type(value, Int8);
+    }
+    catch (std::exception & e){std::cout << e.what();exit(0);}
+    return new Type(value, Int32);
 }
-IOperand const * OperandCreator::createFloat( std::string const & value ) const
+IOperand const * OperandCreator::createFloat(std::string const & value ) const
 {
-    float val = std::stof(value);
-    return new Type<float>(val, Float);
+    return new Type(value, Float);
 }
 IOperand const * OperandCreator::createDouble( std::string const & value ) const
 {
-    double val = std::stod(value);
-    return new Type<double>(val, Double);
+    return new Type(value, Double);
 }

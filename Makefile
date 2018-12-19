@@ -1,6 +1,8 @@
 
 NAME = vm
 
+CC= g++ -g
+
 SRC_FILES = OperandCreator.cpp main.cpp VirtualMachine.cpp Lexer.cpp Parser.cpp
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
@@ -17,7 +19,7 @@ OBJ = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
 
 HEADER = -I includes
 
-WWW = -g -Wall -Wextra -Werror -std=c++11
+WWW = -Wall -Wextra -Werror -std=c++11
 
 COLOR = \x1b[38;5;218m
 
@@ -27,7 +29,7 @@ all: $(PARSING) $(NAME)
 
 $(NAME): $(OBJ)
 		# clang++ parsing/lexer.cpp parsing/parser.cpp $(OBJ) -o $(NAME)
-		g++ $(OBJ) -o $(NAME)
+		$(CC) $(OBJ) -o $(NAME)
 		@echo "$(COLOR)***		$(NAME) compiled			***$(RESET_COLOR)"
 
 # $(PARSING):
@@ -36,7 +38,7 @@ $(NAME): $(OBJ)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 		@mkdir -p $(OBJ_DIR)
-		g++ $(WWW) -o $@ -c $<
+		$(CC) $(WWW) -o $@ -c $<
 		@echo "$(COLOR)***		obj files compiled		***$(RESET_COLOR)"
 
 clean:

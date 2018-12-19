@@ -8,6 +8,9 @@ struct	s_tok
 	std::string command;
 	std::string type;
 	std::string value;
+	std::string comment = "";
+	s_tok(std::string c="", std::string t="", std::string v="", std::string com="") 
+	: command(c), type(t), value(v), comment(com) {}
 };
 
 class Lexer
@@ -34,8 +37,9 @@ public:
 
 	bool set_token(std::string s);
 	s_tok * get_token() const;
-	s_tok get_clone() const;
+	s_tok & get_clone() const;
 private:
+	bool	is_exit;
 	s_tok	*token;
 };
 

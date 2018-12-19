@@ -8,36 +8,37 @@
 #include <errno.h>
 #include <fstream>
 
-int main(int ac, char **av)
+void	read_tokens(std::istream & is)
 {
 	Lexer lex;
 	VirtualMachine vm;
 	std::string line;
+	std::vector<s_tok> tokens;
+
+	while (std::getline(is, line, '\n') && line != ";;")
+		if (!line.empty() && lex.set_token(line))
+			tokens.push_back(lex.get_clone());
+	// check exit instrucion
+	for (unsigned j = 0; j < tokens.size(); j++)
+		Parser::parse_token(tokens[j], vm);
+}
+
+int main(int ac, char **av)
+{
 	if (ac == 1)
-		while (std::getline(std::cin, line, '\n'))
-		{
-			if (lex.set_token(line))
-			Parser::parse_token(lex.get_clone(), vm);
-		}
+		read_tokens(std::cin);		
 	for (int i = 1;  i < ac; i++)
 	{
 		std::filebuf fb;
-		if (fb.open (av[i] ,std::ios::in))
+		if (fb.open(av[i] ,std::ios::in))
  		{
     		std::istream is(&fb);
-			std::vector<s_tok> tokens;
-			while (std::getline(is, line, '\n'))
-			{
-				if (lex.set_token(line))
-				tokens.push_back(lex.get_clone());
-			}
-			for (unsigned i = 0; i < tokens.size(); i++)
-				Parser::parse_token(tokens[i], vm);
+			read_tokens(is);
     		fb.close();
   		}
-		if (errno) { std::cerr << av[i]<<": " << strerror(errno) << std::endl; }
+		if (errno)
+			std::cerr << av[i] << ": " << strerror(errno) << std::endl; 
 	}
-	system("leaks -q vm");
     return 0;
 }
 
