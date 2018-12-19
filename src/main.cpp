@@ -1,70 +1,94 @@
 #include <iostream>
 #include "../includes/Type.hpp"
 #include "../includes/VirtualMachine.hpp"
-#include "../parsing/parser.hpp"
+#include "../includes/Lexer.hpp"
+#include "../includes/Parser.hpp"
+#include <regex>
+#include <string>
+#include <errno.h>
+#include <fstream>
 
-extern "C" int yyparse (void);
-extern  int yylex();
-extern FILE * yyin;
-extern char *yytext;
-
-int		start_program()
+void	read_tokens(std::istream & is)
 {
-	while (yylex())
-		std::cout << yytext << std::endl;
+	Lexer lex;
+	VirtualMachine vm;
+	std::string line;
+	std::vector<s_tok> tokens;
 
-	// return 0;
-	return yyparse();
+	while (std::getline(is, line, '\n') && line != ";;")
+		if (!line.empty() && lex.set_token(line))
+			tokens.push_back(lex.get_clone());
+	// check exit instrucion
+	for (unsigned j = 0; j < tokens.size(); j++)
+		Parser::parse_token(tokens[j], vm);
 }
+
+int main(int ac, char **av)
+{
+	if (ac == 1)
+		read_tokens(std::cin);		
+	for (int i = 1;  i < ac; i++)
+	{
+		std::filebuf fb;
+		if (fb.open(av[i] ,std::ios::in))
+ 		{
+    		std::istream is(&fb);
+			read_tokens(is);
+    		fb.close();
+  		}
+		if (errno)
+			std::cerr << av[i] << ": " << strerror(errno) << std::endl; 
+	}
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+// #include "../parsing/parser.hpp"
+
+// extern "C" int yyparse (void);
+// extern  int yylex();
+// extern FILE * yyin;
+// extern char *yytext;
+// int		start_program()
+// {
+// 	while (yylex())
+// 		std::cout << yytext << std::endl;
+
+// 	// return 0;
+// 	return yyparse();
+// }
+
 
 // When reading from the standard input, the end of the program is
 // indicated by the special symbol ";;" otherwise absent.
-
-void test0();
-void test1();
-
-int 	main(int ac, char **av)
-{
-	if (ac == 1)
-		start_program();
-	for (int i = 1; i < ac; i++)
-	{
-		FILE *myfile = fopen(av[i], "r");
-		if (!myfile)
-		{
-			std::cerr << "Can't open " << av[i] << " file! " << std::endl;
-			return -1;
-		}
-		yyin = myfile;
-		start_program();
-	}
+// int 	main(int ac, char **av)
+// {
+// 	if (ac == 1)
+// 		start_program();
+// 	for (int i = 1; i < ac; i++)
+// 	{
+// 		FILE *myfile = fopen(av[i], "r");
+// 		if (!myfile)
+// 		{
+// 			std::cerr << "Can't open " << av[i] << " file! " << std::endl;
+// 			return -1;
+// 		}
+// 		yyin = myfile;
+// 		start_program();
+// 	}
+// 	return (0);
+// }
 
 
 
-	/// test0();
-	// test1();
-	return (0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//   ************** tests
+//   ************** tests *******************
 void test0()
 {
 	IOperand const * x0 = OperandCreator::get_instance()->createOperand(Int8, std::to_string(0));
