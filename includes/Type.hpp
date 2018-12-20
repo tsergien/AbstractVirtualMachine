@@ -1,6 +1,7 @@
 #ifndef TYPE_CLASS
 # define TYPE_CLASS
 # include "IOperand.hpp"
+# include "Parser.hpp"
 # include "OperandCreator.hpp"
 # include <vector>
 # include <string>
@@ -51,20 +52,21 @@ public:
 
 
 	Type() :   _sval("0.0"), _type(Double),  _precision(4), _val(0){}
-	Type(std::string s, eOperandType type = Double) : _sval(s), _type(type){
+	Type(std::string s, eOperandType type = Double) : _sval(s), _type(type)
+	{
 		_precision = (int)_type;
 		try
 		{
 			_val = _type < Float ? (T)std::stoi(_sval) : (T)std::stod(_sval);
 			_sval = std::to_string(_val);
-			if (_sval.find("."))
-				while (_sval[_sval.size()-1] == '0') _sval.erase(_sval.size()-1, 1);
+			if (_sval.find(".") != std::string::npos)
+				while (_sval[_sval.size()-1] == '0' && _sval[_sval.size()-2] != '.') _sval.erase(_sval.size()-1, 1);
 			if (_type < Float && _sval[0] != '-' && _sval != std::to_string(_val))
 				throw Type::OverflowExc();
 			if (_type < Float && _sval[0] == '-' && _sval != std::to_string(_val))
 				throw Type::UnderflowExc();
 		}
-		catch (std::exception & e) {std::cout << "constr: " << e.what(); exit(0);}
+		catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 	}
 	virtual ~Type(){}
 	Type(Type const & other){*this = other;}
@@ -123,7 +125,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val + cast(t, rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what();}
+		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 		return 0;
 	}
 
@@ -142,7 +144,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val - cast(t, rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what(); exit(0);}
+		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 		return 0;
 	}
 
@@ -161,7 +163,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val * cast(t, rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what(); exit(0);}
+		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 		return 0;
 	}
 
@@ -176,7 +178,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val / cast(t, rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what(); exit(0);}
+		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 		return 0;
 	}
 
@@ -193,7 +195,7 @@ public:
 			else
 				return OperandCreator::get_instance()->createOperand(t, std::to_string((int)_val % std::stoi(rhs.toString())));
 		}
-		catch (std::exception & e){std::cerr << e.what(); exit(0);}
+		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 		return 0;
 	}
 };

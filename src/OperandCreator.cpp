@@ -26,11 +26,11 @@ OperandCreator * OperandCreator::get_instance()
 
 IOperand const * OperandCreator::createInt8( std::string const & value ) const
 {
-    return new Type<char>(value, Int8);
+    return new Type<__int8_t>(value, Int8);
 }
 IOperand const * OperandCreator::createInt16( std::string const & value ) const
 {
-    return new Type<short int>(value, Int16);
+    return new Type<__int16_t>(value, Int16);
 }
 IOperand const * OperandCreator::createInt32( std::string const & value ) const
 {

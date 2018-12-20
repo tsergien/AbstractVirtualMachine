@@ -1,4 +1,5 @@
 #include "../includes/Lexer.hpp"
+#include "../includes/Parser.hpp"
 #include <regex>
 
 Lexer::Lexer(){}
@@ -22,7 +23,7 @@ void	Lexer::read_tokens(std::istream & is, std::vector<s_tok> & tokens)
 			;
 		else throw Lexer::NoExitInstr();
 	}
-	catch (std::exception & e) {std::cout << e.what();}
+	catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 
@@ -56,6 +57,6 @@ s_tok Lexer::set_token(std::string s)
 		}
 		else throw Lexer::InstrUnknown();
 	}
-	catch(std::exception & e) {std::cout << e.what();exit(0);}
+	catch(std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 	return token;
 }

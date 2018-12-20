@@ -5,8 +5,8 @@
 #include <string>
 #include <errno.h>
 #include <fstream>
-// coommands after exit in the standart input: shpuld they be ignored?
-// Line 1 : Error : pop on empty stack
+
+// lexical errors
 static void		exec_input(std::istream & is)
 {
 	Lexer lex;
@@ -14,8 +14,7 @@ static void		exec_input(std::istream & is)
 	std::vector<s_tok> tokens;
 
 	lex.read_tokens(is, tokens);
-	for (unsigned j = 0; j < tokens.size(); j++)
-		Parser::parse_token(tokens[j], vm);
+	Parser::parse(tokens, vm);
 }
 
 int				main(int ac, char **av)

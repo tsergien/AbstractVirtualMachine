@@ -4,7 +4,22 @@
 Parser::Parser(){}
 Parser::~Parser(){}
 
-void	Parser::parse_token(s_tok & token, VirtualMachine & vm)
+int			Parser::lineno()
+{
+	static int line;
+	return ++line;
+}
+
+void		Parser::parse(std::vector<s_tok> & tokens, VirtualMachine & vm)
+{
+	for (unsigned j = 0; j < tokens.size(); j++)
+	{
+		Parser::parse_token(tokens[j], vm);
+		lineno();
+	}
+}
+
+void		Parser::parse_token(s_tok & token, VirtualMachine & vm)
 {
 	if (!token.comment.empty()) {std::cout << token.comment << std::endl; return ;}
 	

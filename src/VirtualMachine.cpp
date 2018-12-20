@@ -1,6 +1,7 @@
 #include "../includes/VirtualMachine.hpp"
 #include "../includes/OperandCreator.hpp"
 #include <assert.h>
+#include "../includes/Parser.hpp"
 
 VirtualMachine::VirtualMachine()
 {
@@ -37,7 +38,7 @@ void        VirtualMachine::pop()
         else
             ops.pop_back();
     }
-    catch (std::exception & e){std::cerr << e.what(); exit(0);}
+    catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::dump()
@@ -62,7 +63,7 @@ void        VirtualMachine::add()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();exit(0);}
+    catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::sub()
@@ -80,7 +81,7 @@ void        VirtualMachine::sub()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();exit(0);exit(0);exit(0);}
+    catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::mul()
@@ -98,7 +99,7 @@ void        VirtualMachine::mul()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();}
+    catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::div()
@@ -116,7 +117,7 @@ void        VirtualMachine::div()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();exit(0);}
+    catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::mod()
@@ -134,7 +135,7 @@ void        VirtualMachine::mod()
             ops.erase(ops.begin() + i - 1);
         }
     }
-    catch (std::exception & e) {std::cerr << e.what();exit(0);exit(0);}
+    catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void        VirtualMachine::print()
@@ -152,6 +153,5 @@ void        VirtualMachine::assert_(IOperand const *p){
         if (p->toString() != ops.back()->toString())
             throw VirtualMachine::AssertionFailed();
     }
-    catch (std::exception & e){std::cout << e.what();exit(0);}
-    // assert(p->toString() == ops.back()->toString());
+    catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
