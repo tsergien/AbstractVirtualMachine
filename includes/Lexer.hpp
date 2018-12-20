@@ -18,7 +18,7 @@ public:
 	{
 		public:
 		virtual const char*  what() const throw(){
-			return "\x1b[38;5;196mLexical error: \033[0m\n";
+			return "\x1b[38;5;196mLexical error \033[0m\n";
 		}
 	};
 	class InstrUnknown : public std::exception

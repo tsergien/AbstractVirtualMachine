@@ -26,7 +26,6 @@ void	Lexer::read_tokens(std::istream & is, std::vector<s_tok> & tokens)
 	catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
-
 s_tok Lexer::set_token(std::string s)
 {
 	std::regex  line("(dump|add|sub|mul|div|mod|print|pop|exit)"
@@ -36,7 +35,7 @@ s_tok Lexer::set_token(std::string s)
 						"([-+]?[0-9]*\\.?[0-9]+)"
 						"(\\s*)(\\))(\\s*)"
 						);
-	std::regex	command("(assert|push|dump|add|sub|mul|div|mod|print|pop|exit)");
+	std::regex	command("(\\s*)(assert|push|dump|add|sub|mul|div|mod|print|pop|exit)(\\s*)");
 	std::regex	type("(int8|int16|int32|float|double)");
 	std::regex	val("(\\()(\\s*)([-+]?[0-9]*\\.?[0-9]+)");
 	std::regex	comment("(^;)");    
@@ -46,16 +45,18 @@ s_tok Lexer::set_token(std::string s)
 	try
 	{
 		if (std::regex_search(s, res, comment)) token.comment = s;
+		else if (!std::regex_search(s, res, command))
+			throw Lexer::InstrUnknown();
 		else if (std::regex_match(s, res, line))
 		{
 			if (std::regex_search(s, res, command))
-				token.command = res[1].str();
+				token.command = (res[1].str() == " ") ? res[2].str() : res[1].str();
 			if (std::regex_search(s, res, type))
 				token.type = res[1].str();
 			if (std::regex_search(s, res, val))
-				token.value = (res[2] == "(") ? res[2].str() : res[3].str();
+				token.value = (res[2].str() == "(") ? res[2].str() : res[3].str();
 		}
-		else throw Lexer::InstrUnknown();
+		else throw Lexer::LexicalError();
 	}
 	catch(std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 	return token;
