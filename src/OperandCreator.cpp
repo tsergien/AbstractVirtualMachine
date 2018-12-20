@@ -26,45 +26,21 @@ OperandCreator * OperandCreator::get_instance()
 
 IOperand const * OperandCreator::createInt8( std::string const & value ) const
 {
-    try
-    {
-        if (value != std::to_string((char)std::stoi(value)))
-            throw Type::OverflowExc();
-        else
-            return new Type(value, Int8);
-    }
-    catch (std::exception & e){std::cout << e.what();exit(0);}
-    return new Type(value, Int8);
+    return new Type<char>(value, Int8);
 }
 IOperand const * OperandCreator::createInt16( std::string const & value ) const
 {
-    try
-    {
-        if (value != std::to_string((short int)std::stoi(value)))
-            throw Type::OverflowExc();
-        else
-            return new Type(value, Int8);
-    }
-    catch (std::exception & e){std::cout << e.what();exit(0);}
-    return new Type(value, Int16);
+    return new Type<short int>(value, Int16);
 }
 IOperand const * OperandCreator::createInt32( std::string const & value ) const
 {
-    try
-    {
-        if (value != std::to_string((int)std::stoi(value)))
-            throw Type::OverflowExc();
-        else
-            return new Type(value, Int8);
-    }
-    catch (std::exception & e){std::cout << e.what();exit(0);}
-    return new Type(value, Int32);
+    return new Type<int>(value, Int32);
 }
 IOperand const * OperandCreator::createFloat(std::string const & value ) const
 {
-    return new Type(value, Float);
+    return new Type<float>(value, Float);
 }
 IOperand const * OperandCreator::createDouble( std::string const & value ) const
 {
-    return new Type(value, Double);
+    return new Type<double>(value, Double);
 }

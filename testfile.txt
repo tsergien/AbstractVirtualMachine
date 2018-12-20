@@ -1,15 +1,21 @@
 push int32(10)
 push double(11)
 push double(5.889)
+
 ;dump
 dump
+
 ;add
 add
+
 ;dump
 dump
-;   pop
+
+;pop
 pop
+
 ;   dump
 dump
+
 exit
 
