@@ -47,7 +47,7 @@ public:
 		public:
 		virtual const char*  what() const throw(){
 			return "\x1b[38;5;196mLexical error: value format is wrong. \033[0m\n"
-			"Expected: int_type([-]?[0..9]+) | float_point([-]?[0..9]+.[0..9]+) \n";
+			"Expected: int_type([+-]?[0..9]+) | float_point([+-]?[0..9]+.[0..9]+) \n";
 		}
 	};
 	Lexer();

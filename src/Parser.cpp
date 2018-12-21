@@ -1,5 +1,6 @@
 #include "../includes/Parser.hpp"
 #include "../includes/OperandCreator.hpp"
+# include <unordered_map>
 
 Parser::Parser(){}
 Parser::~Parser(){}
@@ -12,11 +13,15 @@ int			Parser::lineno()
 
 void		Parser::parse(std::vector<s_tok> & tokens, VirtualMachine & vm)
 {
-	for (unsigned j = 0; j < tokens.size(); j++)
+	try
 	{
-		Parser::parse_token(tokens[j], vm);
-		lineno();
+		for (unsigned j = 0; j < tokens.size(); j++)
+		{
+			Parser::parse_token(tokens[j], vm);
+			lineno();
+		}
 	}
+	catch (std::exception &e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
 }
 
 void		Parser::parse_token(s_tok & token, VirtualMachine & vm)
@@ -25,8 +30,8 @@ void		Parser::parse_token(s_tok & token, VirtualMachine & vm)
 	
 	static std::string s_commands[9] = {"pop", "dump", "add", "sub", "mul", "div", "mod", "print", "exit"};
 	static std::string s_types[5] = {"int8", "int16", "int32", "float", "double"};
-	static std::map<std::string, int> _commands;
-	static std::map<std::string, int> _types;
+	static std::unordered_map<std::string, int> _commands;
+	static std::unordered_map<std::string, int> _types;
 	if (_commands.empty())
 	{
 		for (int i = 0; i < 9; i++)

@@ -2,7 +2,6 @@
 # define PARSER_HPP
 # include "VirtualMachine.hpp"
 # include "Lexer.hpp"
-# include <map>
 
 class Parser
 {

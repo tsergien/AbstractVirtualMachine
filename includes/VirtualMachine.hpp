@@ -15,21 +15,21 @@
 class VirtualMachine
 {
 public:
-    class EmptyStack : public std::exception
+	class EmptyStack : public std::exception
 	{
 		public:
 		virtual const char*  what() const throw(){
 			return "\x1b[38;5;196mException: pop on empty stack\033[0m\n";
 		}
 	};
-    class AssertionFailed : public std::exception
+	class AssertionFailed : public std::exception
 	{
 		public:
 		virtual const char*  what() const throw(){
 			return "\x1b[38;5;196mException: an assertion instruction is not true\033[0m\n";
 		}
 	};
-    class NotEnoughArguments : public std::exception
+	class NotEnoughArguments : public std::exception
 	{
 		public:
 		virtual const char*  what() const throw(){
@@ -37,29 +37,29 @@ public:
 		}
 	};
 
-    VirtualMachine();
-    ~VirtualMachine();
-    VirtualMachine(VirtualMachine const & other);
-    VirtualMachine & operator=(VirtualMachine const & other);
+	VirtualMachine();
+	~VirtualMachine();
+	VirtualMachine(VirtualMachine const & other);
+	VirtualMachine & operator=(VirtualMachine const & other);
 
 	typedef void(VirtualMachine::*fptr)(void); 
 	void		exec_command(int c);
 
-    void        pop();
-    void        dump();
-    void        add();
-    void        sub();
-    void        mul();
-    void        div();
-    void        mod();
-    void        print();
-    void        exit_();
+	void		pop();
+	void		dump();
+	void		add();
+	void		sub();
+	void		mul();
+	void		div();
+	void		mod();
+	void		print();
+	void		exit_();
 
-    void        push(IOperand const *op);
-    void        assert_(IOperand const *p);
+	void		push(IOperand const *op);
+	void		assert_(IOperand const *p);
 private:
-	std::vector<IOperand const *>   ops;
-	fptr	commands[9];
+	std::vector<IOperand const *>	ops;
+	fptr							commands[9];
 };
 
 #endif

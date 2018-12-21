@@ -51,22 +51,18 @@ public:
 	};
 
 
-	Type() :   _sval("0.0"), _type(Double),  _precision(4), _val(0){}
+	Type() : _sval("0.0"), _type(Double),  _precision(4), _val(0){}
 	Type(std::string s, eOperandType type = Double) : _sval(s), _type(type)
 	{
 		_precision = (int)_type;
-		try
-		{
-			_val = _type < Float ? (T)std::stoi(_sval) : (T)std::stod(_sval);
-			_sval = std::to_string(_val);
-			if (_sval.find(".") != std::string::npos)
-				while (_sval[_sval.size()-1] == '0' && _sval[_sval.size()-2] != '.') _sval.erase(_sval.size()-1, 1);
-			if (_type < Float && _sval[0] != '-' && _sval != std::to_string(_val))
-				throw Type::OverflowExc();
-			if (_type < Float && _sval[0] == '-' && _sval != std::to_string(_val))
-				throw Type::UnderflowExc();
-		}
-		catch (std::exception & e) {std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
+		_val = _type < Float ? (T)std::stoi(_sval) : (T)std::stod(_sval);
+		_sval = std::to_string(_val);
+		if (_sval.find(".") != std::string::npos)
+			while (_sval[_sval.size()-1] == '0' && _sval[_sval.size()-2] != '.') _sval.erase(_sval.size()-1, 1);
+		if (_type < Float && _sval[0] != '-' && _sval != std::to_string(_val))
+			throw Type::OverflowExc();
+		if (_type < Float && _sval[0] == '-' && _sval != std::to_string(_val))
+			throw Type::UnderflowExc();
 	}
 	virtual ~Type(){}
 	Type(Type const & other){*this = other;}
@@ -82,14 +78,14 @@ public:
 	virtual int getPrecision( void ) const {return (int)_type;}
 	virtual eOperandType getType( void ) const	{return _type;}
 	virtual std::string const & toString( void ) const {return _sval;}
-	
+
 	int	min_val(eOperandType t) const
 	{
 		switch(t)
 		{
-			case 0: return -128;
-			case 1: return -32768;
-			default: return -2147483648;
+			case 0: return std::numeric_limits<int8_t>::min();
+			case 1: return std::numeric_limits<int16_t>::min();
+			default: return std::numeric_limits<int>::min();
 		}
 		return 0;
 	}
@@ -97,9 +93,9 @@ public:
 	{
 		switch(t)
 		{
-			case 0: return 127;
-			case 1: return 32767;
-			default: return 2147483647;
+			case 0: return std::numeric_limits<int8_t>::max();
+			case 1: return std::numeric_limits<int16_t>::max();
+			default: return std::numeric_limits<int>::max();
 		}
 		return 0;
 	}
@@ -109,24 +105,20 @@ public:
 		return t < Float ? std::stoi(s) : std::stod(s);
 	}
 
-	
+
+
+	// **************** OPERATORS ***********************
 	virtual IOperand const * operator+( IOperand const & rhs ) const
 	{
 		eOperandType t;
 		double r;
 		r = std::stod(rhs.toString());
 		t = _type > rhs.getType() ? _type : rhs.getType();
-		try
-		{
-			if (t < Float && _val > max_val(t) - r)
-				throw Type::OverflowExc();
-			else if (t < Float && _val < min_val(t) - r)
-				throw Type::UnderflowExc();
-			else
-				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val + cast(t, rhs.toString())));
-		}
-		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
-		return 0;
+		if (t < Float && _val > max_val(t) - r)
+			throw Type::OverflowExc();
+		else if (t < Float && _val < min_val(t) - r)
+			throw Type::UnderflowExc();
+		return OperandCreator::get_instance()->createOperand(t, std::to_string(_val + cast(t, rhs.toString())));
 	}
 
 	virtual IOperand const * operator-( IOperand const & rhs ) const
@@ -135,17 +127,11 @@ public:
 		double r;
 		r = std::stod(rhs.toString());
 		t = std::max(_type, rhs.getType());
-		try
-		{
-			if (t < Float && _val > max_val(t) + r)
-				throw Type::OverflowExc();
-			else if (t < Float && _val < min_val(t) + r )
-				throw Type::UnderflowExc();
-			else
-				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val - cast(t, rhs.toString())));
-		}
-		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
-		return 0;
+		if (t < Float && _val > max_val(t) + r)
+			throw Type::OverflowExc();
+		else if (t < Float && _val < min_val(t) + r )
+			throw Type::UnderflowExc();
+		return OperandCreator::get_instance()->createOperand(t, std::to_string(_val - cast(t, rhs.toString())));
 	}
 
 	virtual IOperand const * operator*( IOperand const & rhs ) const
@@ -154,50 +140,34 @@ public:
 		double r;
 		r = std::stod(rhs.toString());
 		t = std::max(_type, rhs.getType());
-		try
-		{
-			if (t < Float && r > 0 && _val > max_val(t) / r)
-				throw Type::OverflowExc();
-			else if (t < Float && _val < min_val(t) / r && _val > max_val(t) / r)//a*b<Min: a<Min/b | a>-Min/b
-				throw Type::UnderflowExc();
-			else
-				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val * cast(t, rhs.toString())));
-		}
-		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
-		return 0;
+		if (t < Float && r > 0 && _val > max_val(t) / r)
+			throw Type::OverflowExc();
+		else if (t < Float && _val < min_val(t) / r && _val > max_val(t) / r)
+			throw Type::UnderflowExc();
+		return OperandCreator::get_instance()->createOperand(t, std::to_string(_val * cast(t, rhs.toString())));
 	}
 
 	virtual IOperand const * operator/( IOperand const & rhs ) const
 	{
 		eOperandType t;
 		t = std::max(_type, rhs.getType());
-		try
-		{
-			if (std::stod(rhs.toString()) == 0)
-				throw Type::DivExc();
-			else
-				return OperandCreator::get_instance()->createOperand(t, std::to_string(_val / cast(t, rhs.toString())));
-		}
-		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
-		return 0;
+		if (std::stod(rhs.toString()) == 0)
+			throw Type::DivExc();
+		return OperandCreator::get_instance()->createOperand(t, std::to_string(_val / cast(t, rhs.toString())));
 	}
 
 	virtual IOperand const * operator%( IOperand const & rhs ) const
 	{
 		eOperandType t;
 		t = std::max(_type, rhs.getType());
-		try
-		{
-			if (std::stod(rhs.toString()) == 0)
-				throw Type::ModExc();
-			else if (t > Int32)
-				throw Type::WrongTypes();
-			else
-				return OperandCreator::get_instance()->createOperand(t, std::to_string((int)_val % std::stoi(rhs.toString())));
-		}
-		catch (std::exception & e){std::cerr << "Line " << Parser::lineno() << " : " << e.what(); exit(0);}
-		return 0;
+		if (std::stod(rhs.toString()) == 0)
+			throw Type::ModExc();
+		else if (t > Int32)
+			throw Type::WrongTypes();
+		return OperandCreator::get_instance()->createOperand(t, std::to_string((int)_val % std::stoi(rhs.toString())));
 	}
+
+
 };
 
 #endif
