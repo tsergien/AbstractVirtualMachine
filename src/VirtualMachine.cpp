@@ -43,6 +43,7 @@ void        VirtualMachine::pop()
 
 void        VirtualMachine::dump()
 {
+    if (ops.empty()) return ;
     std::vector<IOperand const *>::iterator it = ops.end();
     for (it = --ops.end(); it >= ops.begin(); --it)
         std::cout << (*it)->toString() << std::endl;
